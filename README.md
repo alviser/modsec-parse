@@ -5,16 +5,14 @@ This tool is really (really!) young, probably there's somthing better around but
 
 ## usage
 ```
-modsec-parse.py [-h] [-i INPUT_LOG_FILE] [-g GREP] [-m METHOD]
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -i INPUT_LOG_FILE, --input_log_file INPUT_LOG_FILE
-                        a text file where each line holds a different URL
-                        where to search for WP (default: modsec_audit.log)
-  -g GREP, --grep GREP  show all entries with URL matching the given string
-                        (default: )
-  -m METHOD, --method METHOD
-                        show all entries with requests using the given method
-                        (default: )
+modsec-parse.py [-h] [-i INPUT_LOG_FILE] [-g GREP] [-m METHOD] [-o ruleids]
 ```
+
+* -i INPUT_LOG_FILE reads data from `INPUT_LOG_FILE` (default: `modsec_audit.log`)
+
+* -g GREP keep all entries with URL matching `GREP`
+
+* -m METHOD keep all entries with requests using `METHOD`
+
+* -o ruleids choose what to display, as of now only `ruleids` is supported
+	* `ruleids` prints out the ids of the offending rules and how many times they happen per URL
