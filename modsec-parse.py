@@ -22,6 +22,18 @@ def get_options(cmd_args=None):
         type=str,
         default='')
     cmd_parser.add_argument(
+        '-b',
+        '--resbody',
+        help="""show all entries with response body matching the given string""",
+        type=str,
+        default='')
+    cmd_parser.add_argument(
+        '-r',
+        '--reqbody',
+        help="""show all entries with request body matching the given string""",
+        type=str,
+        default='')
+    cmd_parser.add_argument(
         '-m',
         '--method',
         help="""show all entries with requests using the given method""",
@@ -41,6 +53,8 @@ def get_options(cmd_args=None):
     options['grep'] = args.grep
     options['method'] = args.method
     options['output'] = args.output
+    options['resbody'] = args.resbody
+    options['reqbody'] = args.reqbody
 
     return options
 
@@ -48,6 +62,20 @@ def filterByMatchingURL(logs,s):
     entries = {}
     for e in logs:
         if (s in logs[e]['request']['url']):
+            entries[e]  = logs[e]
+    return entries
+
+def filterByMatchingResBody(logs,s):
+    entries = {}
+    for e in logs:
+        if (('body' in logs[e]['response']) and (s in logs[e]['response']['body'])):
+            entries[e]  = logs[e]
+    return entries
+
+def filterByMatchingReqBody(logs,s):
+    entries = {}
+    for e in logs:
+        if (('body' in logs[e]['request']) and (s in logs[e]['request']['body'])):
             entries[e]  = logs[e]
     return entries
 
@@ -69,6 +97,12 @@ def main(opts):
 
     if (opts['method'] != ""):
         log = filterByMatchingMethod(log,opts['method'])
+
+    if (opts['reqbody'] != ""):
+        log = filterByMatchingReqBody(log,opts['reqbody'])
+
+    if (opts['resbody'] != ""):
+        log = filterByMatchingResBody(log,opts['resbody'])
 
     # output
     if (opts['output'] == "ruleids"):
