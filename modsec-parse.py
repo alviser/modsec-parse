@@ -40,6 +40,18 @@ def get_options(cmd_args=None):
         type=str,
         default='')
     cmd_parser.add_argument(
+        '-s',
+        '--startdate',
+        help="""show all entries after DD/MM/YYYY""",
+        type=str,
+        default='')
+    cmd_parser.add_argument(
+        '-e',
+        '--enddate',
+        help="""show all entries before DD/MM/YYYY""",
+        type=str,
+        default='')
+    cmd_parser.add_argument(
         '-o',
         '--output',
         help="""select which kind of output to display, as of now these are the available options: ruleids""",
@@ -50,11 +62,13 @@ def get_options(cmd_args=None):
 
     options = {}
     options['input_log_file'] = args.input_log_file
-    options['grep'] = args.grep
-    options['method'] = args.method
-    options['output'] = args.output
-    options['resbody'] = args.resbody
-    options['reqbody'] = args.reqbody
+    options['grep']         = args.grep
+    options['method']       = args.method
+    options['output']       = args.output
+    options['resbody']      = args.resbody
+    options['reqbody']      = args.reqbody
+    options['startdate']    = args.startdate
+    options['enddate']      = args.enddate
 
     return options
 
@@ -83,6 +97,20 @@ def filterByMatchingMethod(logs,m):
     entries = {}
     for e in logs:
         if (m.upper() in logs[e]['request']['method'].upper()):
+            entries[e]  = logs[e]
+    return entries
+
+def filterByMatchingDate(logs,start=None,end=None):
+    entries = {}
+    for e in logs:
+        this_time = datetime.strptime(e['general_info']['time'],"%d/%b/%Y:%H:%M:%S")
+        
+        if ((not start is None) and (not end is None)):
+            if ((this_time > start) and (this_time < end)):
+                entries[e]  = logs[e]
+        elif ((not end is None) and (this_time < end)):
+            entries[e]  = logs[e]
+        elif ((not start is None) and (this_time > start)):
             entries[e]  = logs[e]
     return entries
 

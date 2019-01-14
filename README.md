@@ -3,6 +3,8 @@ This aims to be a simple command line tool to better read mod security logs.
 
 This tool is really (really!) young, probably there's somthing better around but I couldn't find it.
 
+*NOTE*: you need to run it as a user that can read `INPUT_LOG_FILE`
+
 ## usage
 ```
 modsec-parse.py [-h] [-i INPUT_LOG_FILE] [-g GREP] [-m METHOD] [-r STRING] [-b STRING] [-o ruleids]
