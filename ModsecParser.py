@@ -32,7 +32,7 @@ import re
 #   ['client_ip']           if present is retrieved from the "Apache-Error: ..." row
 #   ['file']                if present is retrieved from the "Apache-Error: ..." row
 #   ['verbose']             if present is retrieved from the "Apache-Error: ..." row
-#   [<headername>]*         one entry for each <name>: <value> row
+#   [<headername>]*         one entry for each <name>: <value> row in the H section (possibily replicating some other keys in the "Apache-Error" valure
 
 def parseFile(f):
     entries         = {}
