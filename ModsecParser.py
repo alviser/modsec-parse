@@ -67,10 +67,10 @@ def parseFile(f):
 
         match = re_marker.match(l)
 
-        # handle the change of entry and section
+        # handle the change of section
+        # entries are changed upon encountering a new section A (see Handling Section A)
         if (match != None):
             # print("change! new entry: " + match.group(1) + " section: " + match.group(2))
-            current_entry    = match.group(1)
             current_section  = match.group(2)
 
             if (current_section == "A"):
@@ -95,30 +95,37 @@ def parseFile(f):
                 print("UNKNOWN SECTION IDENTIFIER: " + current_section)
             continue
         
-        # makes space for the new entry if needed
-        if (not current_entry in entries):
-            entries[current_entry] = {}
-
-        # makes space for the new section if needed
-        if (current_section != "entry_finished" and (not current_section in entries[current_entry])):
-            entries[current_entry][current_section] = {}
-
         # Handling section A - general info 
         # this is usually just one line with all the info we need
         if (current_section == "general_info"):
             m = re_general_info.match(l)
 
             if (m != None):
+                # changing entry
+                current_entry                                          = m.group(2)
+                # makes space for the new entry if needed
+                
+                if (not current_entry in entries):
+                    entries[current_entry] = {}
+                    entries[current_entry][current_section] = {}
+
                 entries[current_entry][current_section]['time']        = m.group(1)
-                entries[current_entry][current_section]['uniqid']      = m.group(2)
                 entries[current_entry][current_section]['client_ip']   = m.group(3)
                 entries[current_entry][current_section]['size']        = m.group(4)
                 entries[current_entry][current_section]['server_ip']   = m.group(5)
                 entries[current_entry][current_section]['server_port'] = m.group(6)
+            else:
+                print "problems getting general info"
 
             # skip the rest of the checks as we certainly are not in the other sections
             # this should make things faster, but might break something: CHECK IT OUT!
             continue
+
+        # now that we should have a current_entry defined
+        # makes space for the new section if needed
+        if (current_section != "entry_finished" and (not current_section in entries[current_entry])):
+            entries[current_entry][current_section] = {}
+
 
         # Handling section B - request headers
         if (current_section == "request" and current_subsection == "headers"):

@@ -2,6 +2,7 @@ import argparse
 import sys
 import re
 import ModsecParser
+from datetime import datetime
 
 def get_options(cmd_args=None):
     """
@@ -54,7 +55,13 @@ def get_options(cmd_args=None):
     cmd_parser.add_argument(
         '-o',
         '--output',
-        help="""select which kind of output to display, as of now these are the available options: ruleids""",
+        help="""select which kind of output to display, as of now these are the available options: ruleids, fulldump""",
+        type=str,
+        default='')
+    cmd_parser.add_argument(
+        '-id',
+        '--id',
+        help="""show only entries with id (short id in the sections title) or uniqid (longer id in section A) matching ID""",
         type=str,
         default='')
 
@@ -69,6 +76,7 @@ def get_options(cmd_args=None):
     options['reqbody']      = args.reqbody
     options['startdate']    = args.startdate
     options['enddate']      = args.enddate
+    options['id']      = args.id
 
     return options
 
@@ -103,7 +111,8 @@ def filterByMatchingMethod(logs,m):
 def filterByMatchingDate(logs,start=None,end=None):
     entries = {}
     for e in logs:
-        this_time = datetime.strptime(e['general_info']['time'],"%d/%b/%Y:%H:%M:%S")
+        # FIXME: this ugliness down here removes the time offset because %z expression seems not to get it correctly
+        this_time = datetime.strptime(logs[e]['general_info']['time'].split(" ")[0],"%d/%b/%Y:%H:%M:%S")
         
         if ((not start is None) and (not end is None)):
             if ((this_time > start) and (this_time < end)):
@@ -114,12 +123,22 @@ def filterByMatchingDate(logs,start=None,end=None):
             entries[e]  = logs[e]
     return entries
 
+def filterByMatchingId(logs,search_id):
+    entries = {}
+    for e in logs:
+        if (e == search_id):
+            entries[e] = logs[e]
+    return entries
+
 def main(opts):
 
     f = open(opts['input_log_file'],"r")
     log = ModsecParser.parseFile(f)
     f.close()
     
+    if (opts['id'] != ""):
+        log = filterByMatchingId(log,opts['id'])
+
     if (opts['grep'] != ""):
         log = filterByMatchingURL(log,opts['grep'])
 
@@ -131,6 +150,19 @@ def main(opts):
 
     if (opts['resbody'] != ""):
         log = filterByMatchingResBody(log,opts['resbody'])
+
+    if (opts['startdate'] != ""):
+        opts['startdate'] = datetime.strptime(opts['startdate'] + ":00:00:00","%d/%m/%Y:%H:%M:%S")
+    else:
+        opts['startdate'] = None
+
+    if (opts['enddate'] != ""):
+        opts['enddate'] = datetime.strptime(opts['enddate'] + ":23:59:59","%d/%m/%Y:%H:%M:%S")
+    else:
+        opts['enddate'] = None
+
+    if ((opts['startdate'] != None) or (opts['enddate'] != None)):
+        log = filterByMatchingDate(log,opts['startdate'],opts['enddate'])
 
     # output
     if (opts['output'] == "ruleids"):
@@ -155,9 +187,15 @@ def main(opts):
             print("\n" + e)
             for i in r[e]:
                 print(" " + i + " ( " + str(r[e][i]) + " times )")
+    # fulldump output used mainly for debugging of single rules
+    # selected with -id
+    elif (opts['output'] == "fulldump"):
+        for e in log:
+            print log[e]
+            print "\n---\n"
     else:
         for e in log:
-            print("\n" + log[e]['request']['method'] + "\t" + log[e]['request']['url'])
+            print("\n" + log[e]['request']['method'] + "\t" + log[e]['request']['url'] + "\t" + log[e]['general_info']['time'])
             if (('rule_id' in log[e]['modsec_info']) and ('msg' in log[e]['modsec_info'])):
                 print(" " + log[e]['modsec_info']['rule_id'] + "\t" + log[e]['modsec_info']['msg'])
             elif ('Apache-Error' in log[e]['modsec_info']):
