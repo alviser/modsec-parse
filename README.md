@@ -1,7 +1,7 @@
 # modsec-parse
 This aims to be a simple command line tool to better read mod security logs.
 
-This tool is really (really!) young, probably there's somthing better around but I couldn't find it.
+This tool is really (really!) young, probably there's something better around but I couldn't find it.
 
 *NOTE*: you need to run it as a user that can read `INPUT_LOG_FILE`
 
