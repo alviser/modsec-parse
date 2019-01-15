@@ -29,6 +29,6 @@ modsec-parse.py [-h] [-i INPUT_LOG_FILE] [-g GREP] [-m METHOD] [-r STRING] [-b S
 * -id ID show only the entry with the id in section A matching `ID`
                         
 * -o FORMAT choose what to display, supported `FORMAT`:
-	* `ruleids` prints out the ids of the offending rules and how many times they happen per URL
+	* `perurl` prints out the ids of the offending rules and how many times they happen per URL
 
-	* `fulldump` prints out the whole data structure created for eache entry, mainly for debug purposes
+	* `fulldump` prints out the whole data structure created for each entry, mainly for debug purposes

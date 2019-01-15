@@ -2,6 +2,7 @@ import argparse
 import sys
 import re
 import ModsecParser
+import pprint
 from datetime import datetime
 
 def get_options(cmd_args=None):
@@ -61,7 +62,7 @@ def get_options(cmd_args=None):
     cmd_parser.add_argument(
         '-o',
         '--output',
-        help="""select which kind of output to display, as of now these are the available options: ruleids, fulldump""",
+        help="""select which kind of output to display, as of now these are the available options: perurl, fulldump""",
         type=str,
         default='')
 
@@ -165,33 +166,37 @@ def main(opts):
         log = filterByMatchingDate(log,opts['startdate'],opts['enddate'])
 
     # output
-    if (opts['output'] == "ruleids"):
+    if (opts['output'] == "perurl"):
         r = {}
         for e in log:
-            p = log[e]['request']['method'] + " "+ log[e]['request']['url']
+            p = e + "\t" + log[e]['request']['method'] + " "+ log[e]['request']['url'] + "\t" + log[e]['general_info']['time']
             if (not p in r):
                 r[p] = {}
             
             if ('rule_id' in log[e]['modsec_info']):
-                if (not log[e]['modsec_info']['rule_id'] in r[p]):
-                    r[p][log[e]['modsec_info']['rule_id']] = 1
+                rule_string = log[e]['modsec_info']['rule_id'] + " " + log[e]['modsec_info']['msg']
+
+                if (not rule_string in r[p]):
+                    r[p][rule_string] = 1
                 else:
-                    r[p][log[e]['modsec_info']['rule_id']] += 1
+                    r[p][rule_string] += 1
             else:
-                if (not "violation without rule id" in r[p]):
-                    r[p]['violation without rule id'] = 1
+                if (not "xxxxxx violation without rule id" in r[p]):
+                    r[p]['xxxxxx violation without rule id'] = 1
                 else:
-                    r[p]['violation without rule id'] += 1
+                    r[p]['xxxxxx violation without rule id'] += 1
 
         for e in r:
             print("\n" + e)
             for i in r[e]:
-                print(" " + i + " ( " + str(r[e][i]) + " times )")
+                print("\t\t\t\t" + i + " ( " + str(r[e][i]) + " times )")
     # fulldump output used mainly for debugging of single rules
     # selected with -id
     elif (opts['output'] == "fulldump"):
+        pp = pprint.PrettyPrinter(indent=1)
+
         for e in log:
-            print log[e]
+            print pp.pprint(log[e])
             print "\n---\n"
     else:
         for e in log:
