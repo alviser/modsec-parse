@@ -169,7 +169,7 @@ def main(opts):
     if (opts['output'] == "perurl"):
         r = {}
         for e in log:
-            p = e + "\t" + log[e]['request']['method'] + " "+ log[e]['request']['url'] + "\t" + log[e]['general_info']['time']
+            p = log[e]['request']['method'] + " "+ log[e]['request']['url']
             if (not p in r):
                 r[p] = {}
             
@@ -189,7 +189,7 @@ def main(opts):
         for e in r:
             print("\n" + e)
             for i in r[e]:
-                print("\t\t\t\t" + i + " ( " + str(r[e][i]) + " times )")
+                print("\t" + i + " ( " + str(r[e][i]) + " times )")
     # fulldump output used mainly for debugging of single rules
     # selected with -id
     elif (opts['output'] == "fulldump"):
@@ -200,13 +200,13 @@ def main(opts):
             print "\n---\n"
     else:
         for e in log:
-            print("\n" + log[e]['request']['method'] + "\t" + log[e]['request']['url'] + "\t" + log[e]['general_info']['time'])
+            print("\n" + e + "\t" + log[e]['request']['method'] + "\t" + log[e]['request']['url'] + "\t" + log[e]['general_info']['time'])
             if (('rule_id' in log[e]['modsec_info']) and ('msg' in log[e]['modsec_info'])):
-                print(" " + log[e]['modsec_info']['rule_id'] + "\t" + log[e]['modsec_info']['msg'])
+                print("\t\t\t\t" + log[e]['modsec_info']['rule_id'] + "\t" + log[e]['modsec_info']['msg'])
             elif ('Apache-Error' in log[e]['modsec_info']):
-                print(" " + log[e]['modsec_info']['Apache-Error'])
+                print("\t" + log[e]['modsec_info']['Apache-Error'])
             else:
-                print(" " + str(log[e]['modsec_info']))
+                print("\t" + str(log[e]['modsec_info']))
 
 if __name__ == "__main__":
     sys.exit(main(get_options()))
