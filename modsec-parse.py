@@ -17,19 +17,19 @@ def get_options(cmd_args=None):
         type=str,
         default='modsec_audit.log')
     cmd_parser.add_argument(
-        '-g',
+        '-gu',
         '--grep',
         help="""show all entries with URL matching the given string""",
         type=str,
         default='')
     cmd_parser.add_argument(
-        '-b',
+        '-resb',
         '--resbody',
         help="""show all entries with response body matching the given string""",
         type=str,
         default='')
     cmd_parser.add_argument(
-        '-r',
+        '-reqb',
         '--reqbody',
         help="""show all entries with request body matching the given string""",
         type=str,
@@ -41,27 +41,27 @@ def get_options(cmd_args=None):
         type=str,
         default='')
     cmd_parser.add_argument(
-        '-s',
+        '-sd',
         '--startdate',
         help="""show all entries after DD/MM/YYYY""",
         type=str,
         default='')
     cmd_parser.add_argument(
-        '-e',
+        '-ed',
         '--enddate',
         help="""show all entries before DD/MM/YYYY""",
+        type=str,
+        default='')
+    cmd_parser.add_argument(
+        '-id',
+        '--id',
+        help="""show only entries with the id in section A matching ID""",
         type=str,
         default='')
     cmd_parser.add_argument(
         '-o',
         '--output',
         help="""select which kind of output to display, as of now these are the available options: ruleids, fulldump""",
-        type=str,
-        default='')
-    cmd_parser.add_argument(
-        '-id',
-        '--id',
-        help="""show only entries with id (short id in the sections title) or uniqid (longer id in section A) matching ID""",
         type=str,
         default='')
 
