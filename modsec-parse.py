@@ -76,7 +76,7 @@ def get_options(cmd_args=None):
     options['reqbody']      = args.reqbody
     options['startdate']    = args.startdate
     options['enddate']      = args.enddate
-    options['id']      = args.id
+    options['id']           = args.id
 
     return options
 
