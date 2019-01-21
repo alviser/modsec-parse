@@ -160,6 +160,8 @@ def main(opts):
     	f = open(opts['input_log_file'],"r")
     	log = ModsecParser.parseFile(f)
     	f.close()
+
+    print(str(len(log)) + " entries found")
     
     if (opts['id'] != ""):
         log = filterByMatchingId(log,opts['id'])
