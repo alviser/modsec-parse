@@ -228,10 +228,14 @@ def main(opts):
     else:
         for e in sorted_logs:
             print("\n" + e[1]['general_info']['uniqid'] + "\t" + e[1]['request']['method'] + "\t" + e[1]['request']['url'] + "\t" + e[1]['general_info']['time'])
-            if (('rule_id' in e[1]['modsec_info']) and ('msg' in e[1]['modsec_info'])):
-                print("\t\t\t\t" + e[1]['modsec_info']['rule_id'] + "\t" + e[1]['modsec_info']['msg'])
+            if ('rule_id' in e[1]['modsec_info']):
+            	# if we have a description we print it out
+            	if ('msg' in e[1]['modsec_info']):
+                	print("\t\t\t\t" + e[1]['modsec_info']['rule_id'] + "\t" + e[1]['modsec_info']['msg'])
+                else:
+                	print("\t\t\t\t" + e[1]['modsec_info']['rule_id'])
             elif ('Apache-Error' in e[1]['modsec_info']):
-                print("\t" + e[1]['modsec_info']['Apache-Error'])
+                print("\t\t\t\t" + e[1]['modsec_info']['Apache-Error'])
             else:
                 print("\t" + str(e[1]['modsec_info']))
 

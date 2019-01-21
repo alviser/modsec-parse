@@ -54,10 +54,10 @@ def parseFile(f):
 
     # section H - regexp for modsec info
     # these are searched in the Apache-Error line
-    re_modsec_info_rule_id = re.compile(" \[id \"(\d*)\"\] ")
-    re_modsec_info_msg     = re.compile(" \[msg \"(.*?)\"\] ")
-    re_modsec_info_client  = re.compile(" \[client (.*?)\] ")
-    re_modsec_info_file    = re.compile(" \[file \"(.*?)\"\] ")
+    re_modsec_info_rule_id = re.compile(" \[id \"(\d*)\"\]")
+    re_modsec_info_msg     = re.compile(" \[msg \"(.*?)\"\]")
+    re_modsec_info_client  = re.compile(" \[client (.*?)\]")
+    re_modsec_info_file    = re.compile(" \[file \"(.*?)\"\]")
     re_modsec_verbose      = re.compile("\] ModSecurity: (.*) \[file")
 
     for l in f:
