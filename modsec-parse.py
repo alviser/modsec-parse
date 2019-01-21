@@ -152,10 +152,10 @@ def main(opts):
     	log = {}
     	for gf in good_files:
     		file_name = base_dir + "/" + gf
-    		print(file_name)
     		f = open(file_name,"r")
     		log.update(ModsecParser.parseFile(f))
     		f.close()
+    	print("collected data from " + str(len(good_files)) + " in " + base_dir + " matching " + base_name)
     else:
     	f = open(opts['input_log_file'],"r")
     	log = ModsecParser.parseFile(f)
@@ -188,7 +188,6 @@ def main(opts):
 
     if ((opts['startdate'] != None) or (opts['enddate'] != None)):
         log = filterByMatchingDate(log,opts['startdate'],opts['enddate'])
-
 
     # sorting things here because we will have less things to sort
     sorted_logs = sorted(log.iteritems(),key=lambda (k,v): (v['general_info']['time'],k))

@@ -89,6 +89,12 @@ def parseFile(f):
                 current_subsection = "body"
             elif (current_section == "H"):
                 current_section = "modsec_info"
+            elif (current_section == "I"):
+                current_section = "request"
+                current_subsection = "compact_body"
+            elif (current_section == "J"):
+                current_section = "request"
+                current_subsection = "files"
             elif (current_section == "Z"):
                 current_section = "entry_finished"
             else:
@@ -157,6 +163,32 @@ def parseFile(f):
                     entries[current_entry][current_section]['body']  = ""
             
             entries[current_entry][current_section]['body'] += l
+
+            # skip the rest of the checks as we certainly are not in the other sections
+            # this should make things faster, but might break something: CHECK IT OUT!
+            continue
+
+        # Handling section I - compact request body
+        # NOTE: if there is no request body the 'compact_body' key won't be even created
+        if (current_section == "request" and current_subsection == "compact_body"):
+            if (not "compact_body" in entries[current_entry][current_section]):
+                    entries[current_entry][current_section]['compact_body']  = ""
+            
+            entries[current_entry][current_section]['compact_body'] += l
+
+            # skip the rest of the checks as we certainly are not in the other sections
+            # this should make things faster, but might break something: CHECK IT OUT!
+            continue
+
+        # Handling section J - request files
+        # NOTE: if there is no section J the 'files' key won't be even created
+        if (current_section == "request" and current_subsection == "files"):
+            if (not "files" in entries[current_entry][current_section]):
+                    entries[current_entry][current_section]['files']  = []
+            d = l.strip().split(",")
+            if (len(d) > 2):
+                # TODO: check out what the first column is in this kind of rows
+                entries[current_entry][current_section]['files'].append({'name': d[2], 'size': d[1], 'type': d[3]})
 
             # skip the rest of the checks as we certainly are not in the other sections
             # this should make things faster, but might break something: CHECK IT OUT!
