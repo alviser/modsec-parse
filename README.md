@@ -7,10 +7,12 @@ This tool is really (really!) young, probably there's something better around bu
 
 ## usage
 ```
-modsec-parse.py [-h] [-i INPUT_LOG_FILE] [-g GREP] [-m METHOD] [-r STRING] [-b STRING] [-o ruleids]
+modsec-parse.py [-h] [-c] [-i INPUT_LOG_FILE] [-g GREP] [-m METHOD] [-r STRING] [-b STRING] [-o ruleids]
 ```
 
 * `-h` show help
+
+* `-c` collects data from all the files int the same directory of `INPUT_LOG_FILE` and with a name containing `INPUT_LOG_FILE`
 
 * `-i INPUT_LOG_FILE` reads data from `INPUT_LOG_FILE` (default: `modsec_audit.log`)
 
