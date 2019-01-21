@@ -193,10 +193,10 @@ def main(opts):
 
     # Nothing found, bye
     if (len(log) == 0):
-    	print("\nNo entry found matching filters")
+    	print("\nNo matching entry found")
     	sys.exit(0)
     else:
-    	print("--- RESULTS")
+    	print("\n--- RESULTS")
 
     # sorting things here because we will have less things to sort
     sorted_logs = sorted(log.iteritems(),key=lambda (k,v): (v['general_info']['time'],k))
