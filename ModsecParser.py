@@ -110,6 +110,7 @@ def parseFile(f):
                     entries[current_entry][current_section] = {}
 
                 entries[current_entry][current_section]['time']        = m.group(1)
+                entries[current_entry][current_section]['uniqid']      = m.group(2)
                 entries[current_entry][current_section]['client_ip']   = m.group(3)
                 entries[current_entry][current_section]['size']        = m.group(4)
                 entries[current_entry][current_section]['server_ip']   = m.group(5)

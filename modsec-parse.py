@@ -3,6 +3,7 @@ import sys
 import re
 import ModsecParser
 import pprint
+import os
 from datetime import datetime
 
 def get_options(cmd_args=None):
@@ -17,6 +18,11 @@ def get_options(cmd_args=None):
         help="""a text file where each line holds a different URL where to search for WP""",
         type=str,
         default='modsec_audit.log')
+    cmd_parser.add_argument(
+        '-c',
+        '--continuous',
+        help="""tries to join earlier logs if found (searches for files with name like INPUT_LOG_FILE-yyyymmdd)""",
+        action='store_true')
     cmd_parser.add_argument(
         '-gu',
         '--grep',
@@ -78,6 +84,7 @@ def get_options(cmd_args=None):
     options['startdate']    = args.startdate
     options['enddate']      = args.enddate
     options['id']           = args.id
+    options['continuous']   = args.continuous
 
     return options
 
@@ -133,9 +140,26 @@ def filterByMatchingId(logs,search_id):
 
 def main(opts):
 
-    f = open(opts['input_log_file'],"r")
-    log = ModsecParser.parseFile(f)
-    f.close()
+    if (opts['continuous']):
+    	base_dir = os.path.dirname(os.path.abspath(opts['input_log_file']))
+    	base_name= os.path.basename(opts['input_log_file'])
+    	
+    	base_dir_files = os.listdir(base_dir)
+
+    	# we take only the files witch matching name
+    	good_files = list(filter(lambda x: base_name in x,base_dir_files))
+
+    	log = {}
+    	for gf in good_files:
+    		file_name = base_dir + "/" + gf
+    		print(file_name)
+    		f = open(file_name,"r")
+    		log.update(ModsecParser.parseFile(f))
+    		f.close()
+    else:
+    	f = open(opts['input_log_file'],"r")
+    	log = ModsecParser.parseFile(f)
+    	f.close()
     
     if (opts['id'] != ""):
         log = filterByMatchingId(log,opts['id'])
@@ -165,16 +189,20 @@ def main(opts):
     if ((opts['startdate'] != None) or (opts['enddate'] != None)):
         log = filterByMatchingDate(log,opts['startdate'],opts['enddate'])
 
+
+    # sorting things here because we will have less things to sort
+    sorted_logs = sorted(log.iteritems(),key=lambda (k,v): (v['general_info']['time'],k))
+
     # output
     if (opts['output'] == "perurl"):
         r = {}
-        for e in log:
-            p = log[e]['request']['method'] + " "+ log[e]['request']['url']
+        for e in sorted_logs:
+            p = e[1]['request']['method'] + " "+ e[1]['request']['url']
             if (not p in r):
                 r[p] = {}
             
-            if ('rule_id' in log[e]['modsec_info']):
-                rule_string = log[e]['modsec_info']['rule_id'] + " " + log[e]['modsec_info']['msg']
+            if ('rule_id' in e[1]['modsec_info']):
+                rule_string = e[1]['modsec_info']['rule_id'] + " " + e[1]['modsec_info']['msg']
 
                 if (not rule_string in r[p]):
                     r[p][rule_string] = 1
@@ -195,18 +223,18 @@ def main(opts):
     elif (opts['output'] == "fulldump"):
         pp = pprint.PrettyPrinter(indent=1)
 
-        for e in log:
-            print pp.pprint(log[e])
+        for e in sorted_logs:
+            print pp.pprint(e[1])
             print "\n---\n"
     else:
-        for e in log:
-            print("\n" + e + "\t" + log[e]['request']['method'] + "\t" + log[e]['request']['url'] + "\t" + log[e]['general_info']['time'])
-            if (('rule_id' in log[e]['modsec_info']) and ('msg' in log[e]['modsec_info'])):
-                print("\t\t\t\t" + log[e]['modsec_info']['rule_id'] + "\t" + log[e]['modsec_info']['msg'])
-            elif ('Apache-Error' in log[e]['modsec_info']):
-                print("\t" + log[e]['modsec_info']['Apache-Error'])
+        for e in sorted_logs:
+            print("\n" + e[1]['general_info']['uniqid'] + "\t" + e[1]['request']['method'] + "\t" + e[1]['request']['url'] + "\t" + e[1]['general_info']['time'])
+            if (('rule_id' in e[1]['modsec_info']) and ('msg' in e[1]['modsec_info'])):
+                print("\t\t\t\t" + e[1]['modsec_info']['rule_id'] + "\t" + e[1]['modsec_info']['msg'])
+            elif ('Apache-Error' in e[1]['modsec_info']):
+                print("\t" + e[1]['modsec_info']['Apache-Error'])
             else:
-                print("\t" + str(log[e]['modsec_info']))
+                print("\t" + str(e[1]['modsec_info']))
 
 if __name__ == "__main__":
     sys.exit(main(get_options()))
