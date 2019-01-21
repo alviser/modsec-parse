@@ -161,7 +161,7 @@ def main(opts):
     	log = ModsecParser.parseFile(f)
     	f.close()
 
-    print(str(len(log)) + " entries found")
+    print(str(len(log)) + " entries found, filtering...")
     
     if (opts['id'] != ""):
         log = filterByMatchingId(log,opts['id'])
@@ -195,6 +195,8 @@ def main(opts):
     if (len(log) == 0):
     	print("\nNo entry found matching filters")
     	sys.exit(0)
+    else:
+    	print("--- RESULTS")
 
     # sorting things here because we will have less things to sort
     sorted_logs = sorted(log.iteritems(),key=lambda (k,v): (v['general_info']['time'],k))
