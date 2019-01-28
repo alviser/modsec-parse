@@ -24,6 +24,12 @@ def get_options(cmd_args=None):
         help="""tries to join earlier logs if found (searches for files with name like INPUT_LOG_FILE-yyyymmdd)""",
         action='store_true')
     cmd_parser.add_argument(
+        '-cip',
+        '--client_ip',
+        help="""show all entries with client IP matching the given one""",
+        type=str,
+        default='')
+    cmd_parser.add_argument(
         '-gu',
         '--grep',
         help="""show all entries with URL matching the given string""",
@@ -85,6 +91,7 @@ def get_options(cmd_args=None):
     options['enddate']      = args.enddate
     options['id']           = args.id
     options['continuous']   = args.continuous
+    options['client_ip']    = args.client_ip
 
     return options
 
@@ -241,6 +248,7 @@ def main(opts):
         for e in sorted_logs:
             
             print("\n" + e[1]['general_info']['uniqid'] + "\t" + e[1]['request']['method'] + "\t" + e[1]['request']['url'] + "\t" + e[1]['general_info']['time'])
+            print("Form: " + e[1]['general_info']['client_ip'])
             
             if ('rule_id' in e[1]['modsec_info']):
             	# if we have a description we print it out
