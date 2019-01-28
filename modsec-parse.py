@@ -77,6 +77,12 @@ def get_options(cmd_args=None):
         help="""select which kind of output to display, as of now these are the available options: perurl, fulldump""",
         type=str,
         default='')
+    cmd_parser.add_argument(
+        '-of',
+        '--output_format',
+        help="""select what data to display if not using perurl/fulldump output formats""",
+        type=str,
+        default='id,mtd,url,time,ip,rule')
 
     args = cmd_parser.parse_args(cmd_args)
 
@@ -92,6 +98,7 @@ def get_options(cmd_args=None):
     options['id']           = args.id
     options['continuous']   = args.continuous
     options['client_ip']    = args.client_ip
+    options['output_format']    = args.output_format
 
     return options
 
@@ -257,22 +264,35 @@ def main(opts):
     else:
         for e in sorted_logs:
             
-
-            print("\n" + e[1]['general_info']['uniqid'] + "\t" + e[1]['request']['method'] + "\t" + e[1]['request']['url'] + "\t" + e[1]['general_info']['time'])
-            print("\t\t\t\tFrom: " + e[1]['general_info']['client_ip'])
-
-            if ('rule_id' in e[1]['modsec_info']):
-            	# if we have a description we print it out
-            	if ('msg' in e[1]['modsec_info']):
-                	print("\t\t\t\t" + e[1]['modsec_info']['rule_id'] + "\t" + e[1]['modsec_info']['msg'])
-                else:
-                	print("\t\t\t\t" + e[1]['modsec_info']['rule_id'])
+            if ("id" in opts['output_format']):
+                print("id:\t\t" + e[1]['general_info']['uniqid'])
             
-            elif ('Apache-Error' in e[1]['modsec_info']):
-                print("\t\t\t\t" + e[1]['modsec_info']['Apache-Error'])
+            if ("mtd" in opts['output_format']):
+                print("method:\t\t" + e[1]['request']['method'])
             
-            else:
-                print("\t" + str(e[1]['modsec_info']))
+            if ("url" in opts['output_format']):
+                print("url:\t\t" + e[1]['request']['url'])
+            
+            if ("time" in opts['output_format']):
+                print("time:\t\t" + e[1]['general_info']['time'])
+
+            if ("ip" in opts['output_format']):
+                print("from IP:\t" + e[1]['general_info']['client_ip'])
+
+            if ("rule" in opts['output_format']):
+                if ('rule_id' in e[1]['modsec_info']):
+                    # if we have a description we print it out
+                    if ('msg' in e[1]['modsec_info']):
+                        print("rule:\t\t" + e[1]['modsec_info']['rule_id'] + " - " + e[1]['modsec_info']['msg'])
+                    else:
+                        print("rule:\t\t" + e[1]['modsec_info']['rule_id'])
+            
+                elif ('Apache-Error' in e[1]['modsec_info']):
+                    print("AError:\t\t" + e[1]['modsec_info']['Apache-Error'])
+
+            print("--")
+
+    print(str(len(sorted_logs)) + " results displayed")
 
 if __name__ == "__main__":
     sys.exit(main(get_options()))
