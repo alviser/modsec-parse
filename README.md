@@ -1,5 +1,7 @@
 # modsec-parse
-This aims to be a simple command line tool to better read mod security logs.
+[Modsecurity](https://modsecurity.org/) is a powerful web application firewall, but its log format is quite difficult to quickly parse to check for specific things or to get an eagle eye of what's going on.
+
+This tool aims to simplify CLI access to modsecurity logs to quickly respond to reports and get a better understaning of what's going on.
 
 This tool is really (really!) young, probably there's something better around but I couldn't find it.
 
@@ -7,7 +9,7 @@ This tool is really (really!) young, probably there's something better around bu
 
 ## usage
 ```
-modsec-parse.py [-h] [-c] [-i INPUT_LOG_FILE] [-g GREP] [-m METHOD] [-r STRING] [-b STRING] [-o ruleids]
+modsec-parse.py [-h] [-c] [-i INPUT_LOG_FILE] [-gu GREP] [-m METHOD] [-reqb STRING]  [-resb STRING] [-sd STARTDATE]  [-sd ENDDATE]  [-id ID] [-cip CLIENT_IP] [-o perurl|fulldump]  [-of LIST]
 ```
 
 * `-h` show help
@@ -29,8 +31,19 @@ modsec-parse.py [-h] [-c] [-i INPUT_LOG_FILE] [-g GREP] [-m METHOD] [-r STRING] 
 * `-ed ENDDATE` keep all entries before `ENDDATE` in DD/MM/YYYY format
 
 * `-id ID` show only the entry with the id in section A matching `ID`
+
+* `-cip CLIENT_IP` show only entries related to client `CLIENT_IP`
                         
 * `-o FORMAT` choose what to display, supported `FORMAT`:
 	* `perurl` prints out the ids of the offending rules and how many times they happen per URL
 
 	* `fulldump` prints out the whole data structure created for each entry, mainly for debug purposes
+* `-of LIST` if no `-o FORMAT` is specified, each entry will be displayed showing the fields listed in the comma separated `LIST`. Available fields are:
+	* `id` the entry unique id
+	* `mtd` the request method
+	* `url` the request URL
+	* `time` the request time
+	* `ip` the client IP address
+	* `rule` the violated rule, with id and message where available
+
+	the default `LIST` is: `id,mtd,url,time,ip,rule`
