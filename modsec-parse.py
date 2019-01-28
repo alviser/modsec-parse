@@ -248,8 +248,8 @@ def main(opts):
         for e in sorted_logs:
             
             print("\n" + e[1]['general_info']['uniqid'] + "\t" + e[1]['request']['method'] + "\t" + e[1]['request']['url'] + "\t" + e[1]['general_info']['time'])
-            print("Form: " + e[1]['general_info']['client_ip'])
-            
+            print("\t\t\t\tFrom: " + e[1]['general_info']['client_ip'])
+
             if ('rule_id' in e[1]['modsec_info']):
             	# if we have a description we print it out
             	if ('msg' in e[1]['modsec_info']):
