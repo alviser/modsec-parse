@@ -145,6 +145,13 @@ def filterByMatchingId(logs,search_id):
             entries[e] = logs[e]
     return entries
 
+def filterByMatchingIP(logs,search_ip):
+    entries = {}
+    for e in logs:
+        if (logs[e]['general_info']['client_ip'] == search_ip):
+            entries[e] = logs[e]
+    return entries
+
 def main(opts):
 
     if (opts['continuous']):
@@ -184,6 +191,9 @@ def main(opts):
 
     if (opts['resbody'] != ""):
         log = filterByMatchingResBody(log,opts['resbody'])
+
+    if (opts['client_ip'] != ""):
+        log = filterByMatchingIP(log,opts['client_ip'])
 
     if (opts['startdate'] != ""):
         opts['startdate'] = datetime.strptime(opts['startdate'] + ":00:00:00","%d/%m/%Y:%H:%M:%S")
@@ -247,6 +257,7 @@ def main(opts):
     else:
         for e in sorted_logs:
             
+
             print("\n" + e[1]['general_info']['uniqid'] + "\t" + e[1]['request']['method'] + "\t" + e[1]['request']['url'] + "\t" + e[1]['general_info']['time'])
             print("\t\t\t\tFrom: " + e[1]['general_info']['client_ip'])
 
